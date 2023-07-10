@@ -1,6 +1,17 @@
 
 
-export function TaggedMap<K, V>() {
+export type TaggedMap<K, V> = {
+  setTag(value: V, ...tags: K[]): void;
+  getTag(value: V): K[];
+  delTag(...tags: K[]): void;
+  addTag(value: V, ...tags: K[]): void;
+  rmvTag(value: V, ...tags: K[]): void;
+  intersect(...tag: K[]): V[];
+  union(...tag: K[]): V[];
+};
+
+
+export function TaggedMap<K, V>(): TaggedMap<K, V> {
   const tag2val = new Map<K, Set<V>>();
   const val2tag = new Map<V, Set<K>>();
 

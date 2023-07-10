@@ -1,6 +1,6 @@
 {
   "name": "tagged-map",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "A simple tagged map collection for simplify the many-to-many mapping",
   "homepage": "https://github.com/tntung/TaggedMap",
   "main": "index.js",
