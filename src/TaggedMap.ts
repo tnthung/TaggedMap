@@ -28,13 +28,15 @@ export function TaggedMap<K, V>() {
   }
 
 
-  function delTag(tag: K) {
-    // Remove from rev
-    tag2val.get(tag)?.forEach(value =>
-      val2tag.get(value)?.delete(tag));
+  function delTag(...tags: K[]) {
+    tags.forEach(tag => {
+      // Remove from rev
+      tag2val.get(tag)?.forEach(value =>
+        val2tag.get(value)?.delete(tag));
 
-    // Remove from map
-    tag2val.delete(tag);
+      // Remove from map
+      tag2val.delete(tag);
+    });
   }
 
 
