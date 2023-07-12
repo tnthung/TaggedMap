@@ -148,4 +148,46 @@ export class TaggedMap<K, V> {
     return valuesArr.reduce((acc, cur) =>
       acc.filter(v => cur.includes(v)));
   }
+
+  difference(from: K, ...tags: K[]): V[] {
+    // get values from `from` tag
+    const values_from = [...this.tag2val.get(from) ?? []];
+
+    // return fromValues if no tags
+    if (tags.length === 0) return values_from;
+
+    // filter values that have any of the tags
+    return values_from.filter(v => {
+      const tags_from = this.val2tag.get(v);
+      if (!tags_from) return false;
+      return [...tags_from].every(
+        t => !tags.includes(t));
+    });
+  }
+
+  complement(from: K): V[] {
+    // get values from `from` tag
+    const values_from = [...this.tag2val.get(from) ?? []];
+
+    // get all values
+    const values = [...this.val2tag.keys()];
+
+    // filter values that have any of the tags
+    return values.filter(v => !values_from.includes(v));
+  }
+
+  symmetricDifference(...tags: K[]): V[] {
+    // get all difference of each tag
+    const valuesArr = tags.map(t => this.difference(
+      t, ...tags.filter(v => v !== t)));
+
+    // combine all values
+    const union = new Set<V>();
+
+    valuesArr.forEach(arr =>
+      arr.forEach(v => union.add(v)));
+
+    // return the union
+    return [...union];
+  }
 }
