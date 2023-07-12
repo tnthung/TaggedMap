@@ -1,10 +1,11 @@
 {
   "name": "tagged-map",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "A simple tagged map collection for simplify the many-to-many mapping",
   "homepage": "https://github.com/tntung/TaggedMap",
   "main": "index.js",
   "scripts": {
+    "test": "tsc && node dist/test.js",
     "prepublish": "rm -rf dist && tsc"
   },
   "author": "TNThung",
