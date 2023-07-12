@@ -33,8 +33,13 @@ export class TaggedMap<K, V> {
   delTag(...tags: K[]) {
     tags.forEach(tag => {
       // Remove from rev
-      this.tag2val.get(tag)?.forEach(value =>
-        this.val2tag.get(value)?.delete(tag));
+      this.tag2val.get(tag)?.forEach(value => {
+        this.val2tag.get(value)?.delete(tag)
+
+        // Clean up if no tag left
+        if (this.val2tag.get(value)?.size === 0)
+          this.val2tag.delete(value);
+      });
 
       // Remove from map
       this.tag2val.delete(tag);
