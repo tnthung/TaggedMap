@@ -74,6 +74,14 @@ export class TaggedMap<K, V> {
       this.val2tag.delete(value);
   }
 
+  tags(): K[] {
+    return [...this.tag2val.keys()];
+  }
+
+  values(): V[] {
+    return [...this.val2tag.keys()];
+  }
+
   exact(...tags: K[]): V[] {
     // get the intersection of all tags
     const values = this.intersect(...tags);
