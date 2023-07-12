@@ -74,6 +74,20 @@ export class TaggedMap<K, V> {
       this.val2tag.delete(value);
   }
 
+  hasTag(value: V, ...tags: K[]) {
+    // return true if no tag
+    if (tags.length === 0) return true;
+
+    // get tags of value
+    const tags_of_value = this.val2tag.get(value);
+
+    // return false if no tags
+    if (!tags_of_value) return false;
+
+    // return true if all tags are in tags_of_value
+    return tags.every(t => tags_of_value.has(t));
+  }
+
   tags(): K[] {
     return [...this.tag2val.keys()];
   }
