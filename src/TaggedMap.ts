@@ -4,6 +4,19 @@ export class TaggedMap<K, V> {
   private tag2val = new Map<K, Set<V>>();
   private val2tag = new Map<V, Set<K>>();
 
+  tags(): K[] {
+    return [...this.tag2val.keys()];
+  }
+
+  values(): V[] {
+    return [...this.val2tag.keys()];
+  }
+
+  clear() {
+    this.tag2val.clear();
+    this.val2tag.clear();
+  }
+
   setTag(value: V, ...tags: K[]) {
     // Remove old tags
     this.val2tag.get(value)?.forEach(tag => {
@@ -91,14 +104,6 @@ export class TaggedMap<K, V> {
 
     // return true if all tags are in tags_of_value
     return tags.every(t => tags_of_value.has(t));
-  }
-
-  tags(): K[] {
-    return [...this.tag2val.keys()];
-  }
-
-  values(): V[] {
-    return [...this.val2tag.keys()];
   }
 
   exact(...tags: K[]): V[] {
