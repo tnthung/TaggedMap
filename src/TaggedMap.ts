@@ -80,9 +80,9 @@ export class TaggedMap<K, V> {
 
     // filter out values that have more tags than specified
     return values.filter(v => {
-      const tags = this.val2tag.get(v);
-      if (!tags) return false;
-      return tags.size === tags.size;
+      const tagsOfValue = this.val2tag.get(v);
+      if (!tagsOfValue) return false;
+      return tagsOfValue.size === tags.length;
     });
   }
 
