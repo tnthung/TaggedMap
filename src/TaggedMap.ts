@@ -1,120 +1,98 @@
 
 
-export type TaggedMap<K, V> = {
-  setTag(value: V, ...tags: K[]): void;
-  getTag(value: V): K[];
-  delTag(...tags: K[]): void;
-  addTag(value: V, ...tags: K[]): void;
-  rmvTag(value: V, ...tags: K[]): void;
-  intersect(...tag: K[]): V[];
-  union(...tag: K[]): V[];
-};
+export class TaggedMap<K, V> {
+  private tag2val = new Map<K, Set<V>>();
+  private val2tag = new Map<V, Set<K>>();
 
-
-export function TaggedMap<K, V>(): TaggedMap<K, V> {
-  const tag2val = new Map<K, Set<V>>();
-  const val2tag = new Map<V, Set<K>>();
-
-
-  function setTag(value: V, ...tags: K[]) {
+  setTag(value: V, ...tags: K[]) {
     // Remove old tags
-    val2tag.get(value)?.forEach(tag => {
+    this.val2tag.get(value)?.forEach(tag => {
       if (tags.includes(tag)) return;
-      tag2val.get(tag)?.delete(value)
+      this.tag2val.get(tag)?.delete(value)
 
       // Clean up if no tag left
-      if (tag2val.get(tag)?.size === 0)
-        tag2val.delete(tag);
+      if (this.tag2val.get(tag)?.size === 0)
+        this.tag2val.delete(tag);
     });
 
     // Set new tags
-    val2tag.set(value, new Set(tags));
+    this.val2tag.set(value, new Set(tags));
 
     // Add to map
     tags.forEach(tag => {
-      const values = tag2val.get(tag);
+      const values = this.tag2val.get(tag);
       if (values) values.add(value);
-      else tag2val.set(tag, new Set([value]));
+      else this.tag2val.set(tag, new Set([value]));
     });
   }
 
+  getTag(value: V): K[] {
+    return [...this.val2tag.get(value) ?? []];
+  }
 
-  function delTag(...tags: K[]) {
+  delTag(...tags: K[]) {
     tags.forEach(tag => {
       // Remove from rev
-      tag2val.get(tag)?.forEach(value =>
-        val2tag.get(value)?.delete(tag));
+      this.tag2val.get(tag)?.forEach(value =>
+        this.val2tag.get(value)?.delete(tag));
 
       // Remove from map
-      tag2val.delete(tag);
+      this.tag2val.delete(tag);
     });
   }
 
-
-  function getTag(value: V): K[] {
-    return [...val2tag.get(value) ?? []];
-  }
-
-
-  function addTag(value: V, ...tags: K[]) {
+  addTag(value: V, ...tags: K[]) {
     // Add to map
     tags.forEach(tag => {
-      const values = tag2val.get(tag);
+      const values = this.tag2val.get(tag);
       if (values) values.add(value);
-      else tag2val.set(tag, new Set([value]));
+      else this.tag2val.set(tag, new Set([value]));
     });
 
     // Add to rev
-    const oldTags = val2tag.get(value);
+    const oldTags = this.val2tag.get(value);
     if (!oldTags) {
-      val2tag.set(value, new Set(tags));
+      this.val2tag.set(value, new Set(tags));
       return;
     }
 
     tags.forEach(v => oldTags.add(v));
   }
 
-
-  function rmvTag(value: V, ...tags: K[]) {
+  rmvTag(value: V, ...tags: K[]) {
     // Remove from map
     tags.forEach(tag =>
-      tag2val.get(tag)?.delete(value));
+      this.tag2val.get(tag)?.delete(value));
 
     // Remove from rev
-    const oldTags = val2tag.get(value);
+    const oldTags = this.val2tag.get(value);
     if (!oldTags) return;
     tags.forEach(v => oldTags.delete(v));
 
     // Clean up if no tag left
     if (oldTags.size === 0)
-      val2tag.delete(value);
+      this.val2tag.delete(value);
   }
 
+  exact(...tags: K[]): V[] {
+    // get the intersection of all tags
+    const values = this.intersect(...tags);
 
-  function intersect(...tag: K[]): V[] {
-    // return empty array if no tag
-    if (tag.length === 0) return [];
-
-    // setup initial values
-    const valuesArr = tag.map(v => {
-      const tmp = tag2val.get(v);
-      if (!tmp) return [];
-      return [...tmp];
+    // filter out values that have more tags than specified
+    return values.filter(v => {
+      const tags = this.val2tag.get(v);
+      if (!tags) return false;
+      return tags.size === tags.size;
     });
-
-    // reduce the valuesArr to the intersection of all values
-    return valuesArr.reduce((acc, cur) =>
-      acc.filter(v => cur.includes(v)));
   }
 
-
-  function union(...tag: K[]): V[] {
+  union(...tags: K[]): V[] {
     // return empty array if no tag
-    if (tag.length === 0) return [];
+    if (tags.length === 0) return [];
 
     // setup initial values
-    const valuesArr = tag.map(v => {
-      const tmp = tag2val.get(v);
+    const valuesArr = tags.map(t => {
+      const tmp = this.tag2val.get(t);
       if (!tmp) return [];
       return [...tmp];
     });
@@ -128,15 +106,19 @@ export function TaggedMap<K, V>(): TaggedMap<K, V> {
     return [...union];
   }
 
+  intersect(...tags: K[]): V[] {
+    // return empty array if no tag
+    if (tags.length === 0) return [];
 
-  return {
-    setTag,
-    getTag,
-    delTag,
-    addTag,
-    rmvTag,
+    // setup initial values
+    const valuesArr = tags.map(t => {
+      const tmp = this.tag2val.get(t);
+      if (!tmp) return [];
+      return [...tmp];
+    });
 
-    intersect,
-    union,
-  };
+    // reduce the valuesArr to the intersection of all values
+    return valuesArr.reduce((acc, cur) =>
+      acc.filter(v => cur.includes(v)));
+  }
 }
