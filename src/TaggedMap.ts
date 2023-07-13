@@ -154,6 +154,17 @@ export class TaggedMap<K, V> {
       acc.filter(v => cur.includes(v)));
   }
 
+  complement(from: K): V[] {
+    // get values from `from` tag
+    const values_from = [...this.tag2val.get(from) ?? []];
+
+    // get all values
+    const values = [...this.val2tag.keys()];
+
+    // filter values that have any of the tags
+    return values.filter(v => !values_from.includes(v));
+  }
+
   difference(from: K, ...tags: K[]): V[] {
     // get values from `from` tag
     const values_from = [...this.tag2val.get(from) ?? []];
@@ -168,17 +179,6 @@ export class TaggedMap<K, V> {
       return [...tags_from].every(
         t => !tags.includes(t));
     });
-  }
-
-  complement(from: K): V[] {
-    // get values from `from` tag
-    const values_from = [...this.tag2val.get(from) ?? []];
-
-    // get all values
-    const values = [...this.val2tag.keys()];
-
-    // filter values that have any of the tags
-    return values.filter(v => !values_from.includes(v));
   }
 
   symmetricDifference(...tags: K[]): V[] {
