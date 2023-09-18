@@ -118,6 +118,24 @@ export class TaggedMap<K, V> {
     });
   }
 
+  exactOne(...tags: K[]): V | undefined {
+    // get the intersection of all tags
+    const values = this.intersect(...tags);
+
+    // filter out values that have more tags than specified
+    const exactValues = values.filter(v => {
+      const tagsOfValue = this.val2tag.get(v);
+      if (!tagsOfValue) return false;
+      return tagsOfValue.size === tags.length;
+    });
+
+    // if no value, return undefined
+    if (exactValues.length === 0) return undefined;
+
+    // return the first value
+    return exactValues[0];
+  }
+
   union(...tags: K[]): V[] {
     // return empty array if no tag
     if (tags.length === 0) return [];

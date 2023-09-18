@@ -248,6 +248,26 @@ map.exact("a", "b", "c");   // [tmp1]
 map.exact("a", "b", "d");   // [tmp2]
 ```
 
+### `exactOne(...tags)`
+
+Get first value that exactly matches the given `tags`. (`undefined` if no match)
+
+```ts
+const map = new TaggedMap<string, [number]>();
+
+const tmp1 = [0];
+const tmp2 = [1];
+const tmp3 = [2];
+
+map.setTag(tmp1, "a", "b", "c");
+map.setTag(tmp2, "a", "b", "d");
+map.setTag(tmp3, "a", "b", "d");
+
+map.exactOne("a", "b");        // undefined
+map.exactOne("a", "b", "c");   // tmp1
+map.exactOne("a", "b", "d");   // tmp2
+```
+
 ### `union(...tags)`
 
 Get all values that have at least one of the given `tags`.
